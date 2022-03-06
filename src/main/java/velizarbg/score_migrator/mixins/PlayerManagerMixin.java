@@ -32,7 +32,7 @@ public class PlayerManagerMixin {
 	@Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendScoreboard(Lnet/minecraft/scoreboard/ServerScoreboard;Lnet/minecraft/server/network/ServerPlayerEntity;)V"))
 	private void migrateScores(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
 		String newName = player.getGameProfile().getName();
-		if (cachedName.equalsIgnoreCase(newName)) return;
+		if (cachedName.equals(newName)) return;
 
 		ServerScoreboard scoreboard = server.getScoreboard();
 		Map<ScoreboardObjective, ScoreboardPlayerScore> playerScoresMap = scoreboard.getPlayerObjectives(cachedName);
