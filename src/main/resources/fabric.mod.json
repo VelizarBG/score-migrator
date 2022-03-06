@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "score-migrator",
+  "version": "${version}",
+
+  "name": "Score Migrator",
+  "description": "Migrates a player's scores upon changing their name",
+  "authors": [
+    "VelizarBG"
+  ],
+  "contact": {
+    "sources": "https://github.com/VelizarBG/score-migrator"
+  },
+
+  "license": "MIT",
+
+  "environment": "*",
+  "mixins": [
+    "score_migrator.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.12.12",
+    "minecraft": "1.18.x",
+    "java": ">=17"
+  }
+}
