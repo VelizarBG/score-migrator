@@ -6,6 +6,7 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +31,7 @@ public class PlayerManagerMixin {
 	}
 
 	@Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendScoreboard(Lnet/minecraft/scoreboard/ServerScoreboard;Lnet/minecraft/server/network/ServerPlayerEntity;)V"))
-	private void migrateScores(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
+	private void migrateScores(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo ci) {
 		String newName = player.getGameProfile().getName();
 		if (server.getUserCache() == null || cachedName.equals(newName))
 			return;
