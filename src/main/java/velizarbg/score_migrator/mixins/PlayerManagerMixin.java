@@ -1,8 +1,9 @@
 package velizarbg.score_migrator.mixins;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -15,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Map;
 
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
@@ -37,12 +36,13 @@ public class PlayerManagerMixin {
 			return;
 
 		ServerScoreboard scoreboard = server.getScoreboard();
-		Map<ScoreboardObjective, ScoreboardPlayerScore> playerScoresMap = scoreboard.getPlayerObjectives(cachedName);
-		if (!playerScoresMap.isEmpty()) {
-			for (Map.Entry<ScoreboardObjective, ScoreboardPlayerScore> entry : playerScoresMap.entrySet()) {
-				scoreboard.getPlayerScore(newName, entry.getKey()).setScore(entry.getValue().getScore());
+		ScoreHolder oldScoreHolder = ScoreHolder.fromName(cachedName);
+		Object2IntMap<ScoreboardObjective> objectives = scoreboard.getScoreHolderObjectives(oldScoreHolder);
+		objectives.forEach((scoreboardObjective, score) -> {
+			scoreboard.removeScore(oldScoreHolder, scoreboardObjective);
+			if (!scoreboardObjective.getCriterion().isReadOnly()) {
+				scoreboard.getOrCreateScore(player, scoreboardObjective, false).setScore(score);
 			}
-			scoreboard.resetPlayerScore(cachedName, null);
-		}
+		});
 	}
 }
