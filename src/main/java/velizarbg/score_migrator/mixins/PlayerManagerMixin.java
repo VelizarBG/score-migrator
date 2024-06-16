@@ -21,7 +21,7 @@ public class PlayerManagerMixin {
 
 	@SuppressWarnings("DataFlowIssue") // score can't be null
 	@Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/UserCache;add(Lcom/mojang/authlib/GameProfile;)V"))
-	private void migrateScores(CallbackInfo ci, @Local ServerPlayerEntity player, @Local String cachedName) {
+	private void migrateScores(CallbackInfo ci, @Local(argsOnly = true) ServerPlayerEntity player, @Local String cachedName) {
 		String newName = player.getGameProfile().getName();
 		if (cachedName.equals(newName))
 			return;
