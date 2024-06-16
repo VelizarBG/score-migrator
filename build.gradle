@@ -1,11 +1,15 @@
 plugins {
-	id 'fabric-loom' version '1.4.4'
+	id 'fabric-loom' version '1.6.11'
 	id 'me.shedaniel.unified-publishing' version '0.1.+'
 	id 'maven-publish'
 }
 
 version = project.minecraft_version+'-'+project.mod_version
 group = project.maven_group
+
+base {
+	archivesName = project.archives_base_name
+}
 
 repositories {
 	// Add repositories to retrieve artifacts from in here.
@@ -47,7 +51,7 @@ java {
 
 jar {
 	from("LICENSE") {
-		rename { "${it}_${project.archives_base_name}"}
+		rename { "${it}_${project.base.archivesName.get()}"}
 	}
 }
 
