@@ -6,6 +6,7 @@ import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.ScoreboardScore;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerConfigEntry;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Final;
@@ -20,10 +21,13 @@ public class PlayerManagerMixin {
 	@Shadow @Final private MinecraftServer server;
 
 	@SuppressWarnings("DataFlowIssue") // score can't be null
-	@Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/UserCache;add(Lcom/mojang/authlib/GameProfile;)V"))
-	private void migrateScores(CallbackInfo ci, @Local(argsOnly = true) ServerPlayerEntity player, @Local String cachedName) {
-		String newName = player.getGameProfile().getName();
-		if (cachedName.equals(newName))
+	@Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;sendScoreboard(Lnet/minecraft/scoreboard/ServerScoreboard;Lnet/minecraft/server/network/ServerPlayerEntity;)V"))
+	private void migrateScores(CallbackInfo ci, @Local(argsOnly = true) ServerPlayerEntity player) {
+		PlayerConfigEntry configEntry = player.getPlayerConfigEntry();
+		String currentName = configEntry.name();
+		String cachedName = server.getApiServices().nameToIdCache()
+			.getByUuid(configEntry.id()).map(PlayerConfigEntry::name).orElse(currentName);
+		if (cachedName.equals(currentName))
 			return;
 
 		ServerScoreboard scoreboard = server.getScoreboard();
