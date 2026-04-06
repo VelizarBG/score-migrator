@@ -4,7 +4,7 @@
     "package": "velizarbg.score_migrator.mixins",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "PlayerManagerMixin"
+        "PlayerListMixin"
     ],
     "injectors": {
         "defaultRequire": 1
